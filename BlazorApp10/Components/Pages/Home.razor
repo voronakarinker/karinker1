@@ -1,0 +1,132 @@
+﻿@page "/"
+@using System.Dynamic
+@using BlazorApp10.Models
+@using Newtonsoft.Json
+@rendermode InteractiveServer
+<h1 STYLE="font-size: 25px" CLASS="fontiki">OТЗIВI</h1>
+<input style="width: 80%" type="text" placeholder="Введите отзыв" @bind="NewFeedback.Text"/>
+
+
+<div class="rating">
+    <input @bind="NewFeedback.Stars" type="radio" id="star-1" name="star-radio" value="1"> <!-- тут нельзя вводитьбинд-->
+    <label for="star-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path pathLength="360" d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"></path></svg>
+    </label>
+    <input  @bind="" type="radio" id="star-2" name="star-radio" value="2">
+    <label for="star-2">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path pathLength="360" d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"></path></svg>
+    </label>
+    <input  type="radio" id="star-3" name="star-radio" value="3">
+    <label for="star-3">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path pathLength="360" d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"></path></svg>
+    </label>
+    <input  type="radio" id="star-4" name="star-radio" value="4">
+    <label for="star-4">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path pathLength="360" d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"></path></svg>
+    </label>
+    <input  type="radio" id="star-5" name="star-radio" value="5">
+    <label for="star-5">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path pathLength="360" d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.45,13.97L5.82,21L12,17.27Z"></path></svg>
+    </label>
+</div>
+
+<button @onclick="AddFile">оставить отзыв</button>
+
+
+<table style="align-content: center">
+    <div>
+        @foreach (var item in Feedback)
+
+        {
+            @if (BtnCheck)
+            {
+                <div class="border-table">
+                    <text class="ttt">Анонимный пользователь</text>
+                    <div style="align-content: center"> @item.Text</div>
+                    <div style="align-content: center"> @item.Stars Количество звезд</div>
+                    <div>
+                        @if(item.Stars == "1")
+                        for (int i = 0; i < 1; i++)
+                        {
+                            <img height="40px" src="image/Black-Vector-Star-PN.png"/>
+                        }
+                        @if(item.Stars == "2")
+                        for (int i = 0; i < 2; i++)
+                        {
+                            <img height="40px" src="image/Black-Vector-Star-PN.png"/>
+                        }
+                        @if(item.Stars == "3")
+                            for (int i = 0; i < 3; i++)
+                        {
+                            <img height="40px" src="image/Black-Vector-Star-PN.png"/>
+                        }
+                        @if(item.Stars == "4")
+                            for (int i = 0; i < 4; i++)
+                        {
+                            <img height="40px" src="image/Black-Vector-Star-PN.png"/>
+                        }
+                        @if(item.Stars == "5")
+                            for (int i = 0; i < 5; i++)
+                        {
+                            <img height="40px" src="image/Black-Vector-Star-PN.png"/>
+                        }
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</table>
+<text>Current Page Number: @currentPageNumber</text>
+
+@code{
+    private IList<Otzivi> Feedback = new List<Otzivi>();
+    public Otzivi NewFeedback { get; set; } = new Otzivi();
+    bool BtnCheck { get; set; } = false;
+    const string path = "Feedback.json";
+    
+    
+   
+    
+    
+    
+    
+    protected override void OnInitialized()
+    {
+        OpenFile();
+    }
+
+    public void OpenFile()
+    {
+        if (File.Exists(path))
+        {
+            var json = File.ReadAllText(path);
+            Feedback = JsonConvert.DeserializeObject<List<Otzivi>>(json)!;
+        }
+        else
+        {
+            SaveFile();
+        }
+    }
+
+    public void SaveFile()
+    {
+        var json = JsonConvert.SerializeObject(Feedback);
+        File.WriteAllText(path, json);
+    }
+
+    private void AddFile()
+    {
+        Feedback.Add(NewFeedback);
+        NewFeedback = new Otzivi();
+        SaveFile();
+        BtnCheck = true;
+    }
+
+    int currentPageNumber = 2;
+
+    private async Task OnPageChangedAsync(int newPageNumber)
+    {
+        await Task.Run(() => { currentPageNumber = newPageNumber; });
+    }
+
+}
